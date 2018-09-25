@@ -1,6 +1,6 @@
 # This is the layout of the data
 # Arrangement: 
-# {id: _,
+# {id: a_,
 #  name: _,
 #  # owner: _,
 #  # users: [_ids_],
@@ -12,19 +12,19 @@
 # }
 #
 # Snapshot:
-# {id: _,
+# {id: s_,
 #  name: _,
 #  snapshot: {container1_id: [item1_id, item2_id], container2_id: [item3_id]}
 # }
 # 
 # Item:
-# {id: i1,
+# {id: i_,
 #  name: _,
 #  size: 1,
 # }
 #
 # Container:
-# {id: c1,
+# {id: c_,
 #  name: _,
 #  size: 8
 # }
@@ -33,6 +33,7 @@
 import json
 import random
 import string
+import time
 
 def create_random_id(prepended_letter=""):
   return prepended_letter + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
@@ -56,6 +57,7 @@ class Arrangement(object):
     self.data["containers"] = []
     self.data["is_deleted"] = False
     self.data["snapshots"] = [create_snapshot("only snapshot")]
+    self.data["timestamp"] = time.time()
   
   def add_item(self, name):
     item = create_item(name)
