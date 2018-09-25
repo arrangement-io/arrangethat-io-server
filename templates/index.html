@@ -1,0 +1,68 @@
+<!Doctype html>
+<html lang="en">
+<head>
+    <title>Grace Arrangement App</title>
+      <meta charset="utf-8">
+    <!--<link rel=stylesheet type=text/css href="/static/style.css?cache={{time}}">-->
+    <link rel="stylesheet" type="text/css" href="static/styles/style.css" />
+    <link rel="shortcut icon" href="/static/images/shakespeare-web_0.jpg"/>
+</head>
+<body style="
+    font-family: Helvetica;
+    font-size: 18px;
+    font-weight: lighter;
+    background-color: #d7ded6;
+">
+<div class="wot-popup-container"></div>
+<div id="wrapper">
+    <div id="navbar" style="margin: auto; text-align: center; padding: 3px;">
+        <img src="/static/images/shakespeare-003.jpg" style="max-height: 50px;">
+    </div>
+
+    <img src="static/images/shakespeare-002.jpg" style="max-width: 100%;">
+
+    <div id="quote">
+        <div class="header">
+        ArrangeThat
+        </div>
+
+        <div class="text">
+
+        </div>
+
+    <div class="container">
+            <div id="sentence">
+                "{{ sentence }}"
+            </div>
+        
+        <button class="btn" style="padding :  0.5em 1em;" id="quote_button" onclick="refreshSentence()" > Generate a new quote </button>
+        <button class="btn" style="padding :  0.5em 1em;"  type="submit" id="tweet_button"  onclick="tweet()" > Tweet Button  </button>
+        <button class="btn" style="padding :  0.5em 1em;" type="submit" id="all_favorite_button" onclick="favorite()"> Add to Favorites </button> </div>
+
+    <div id="about">
+        <div class="header">
+        </div>
+        <br>
+        <center><a href="https://github.com/jeffchiucp"> William ShakeSpeare Tweet Generator</a> <a href="https://github.com/Jeffchiucp/Python-Tweet-Generator" </a> </a> using Markov Chains.
+
+        <right>The Corpus I used was has 100,000 lines of text and 884,647 words. It was taken from the Complete William Shakespeare plays 
+        </right>
+
+        <div>
+        <right>                         Favorite Tweets!!!!!
+        </right>
+
+        </div>
+        <div id="favorites">
+
+        </div>
+    </div>
+
+    <div style="float: left">
+        <input placeholder="Sentence Length" id="length">
+    </div>
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script>
+</script>
