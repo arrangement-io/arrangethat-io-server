@@ -19,20 +19,16 @@ def uniqueid():
 def home_page():
     return "Arrange That!"
 
-
+# Create arrangement
 @app.route('/arrangement', methods=['POST'])
-@app.route('/api/v1/arrangements', methods=['POST'])
+@app.route('/api/v1/arrangement', methods=['POST'])
 def add_arrangement():
-    # unique_sequence = uniqueid()
     content = request.json
     try:
         data = {}
         name = content['name']
 
         is_deleted = content['is_deleted']
-        # items = content['item']
-        # containers = content['containers']
-        # snapshots = content['snapshots']
         items = add_item(content)
         containers = add_container(content)
         snapshots = add_snapshots(content)
