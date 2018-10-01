@@ -3,10 +3,10 @@ import traceback
 import random
 import datetime
 from test_mongo_data import Mdb
+from config import ITEM, CONTAINER, ARRANGEMENT, SNAPSHOT
 
 app = Flask(__name__)
 mdb = Mdb()
-
 
 def uniqueid():
     seed = random.getrandbits(32)
@@ -44,9 +44,14 @@ def add_arrangement():
         data["is_deleted"] = is_deleted
         data["containers"] = containers
         data["timestamp"] = datetime.datetime.today().strftime("%a %b %d %X  %Y ")
+        query = {'name': name}
 
-        mdb.add_arrangement(data)
-        return jsonify({"error": '0', 'result': data})
+        check = mdb.check_data(query, ARRANGEMENT)
+        if check:
+            return jsonify({"error": '1', 'result': 'data already saved!' })
+        else:
+            mdb.add_data(data, ARRANGEMENT)
+            return jsonify({"error": '0', 'result': data})
 
     except Exception as exp:
         print('get_arrangement() :: Got exception: %s' % exp)
@@ -64,13 +69,14 @@ def add_item(content):
         data['_id'] = "i_"+str(next(uniqueid()))
         data['name'] = name
         data['size'] = size
-
-        check = mdb.check_item(name)
+        query = {'name': name}
+        check = mdb.check_data(query, ITEM)
         if check:
-            result = mdb.get_item_by_name(name)
+            result = mdb.get_data_by_name(query, ITEM)
             response.append(result)
         else:
-            result = mdb.add_item(data)
+            mdb.add_data(data, ITEM)
+            result = mdb.get_data_by_name(query, ITEM)
             response.append(result)
     return response
 
@@ -85,12 +91,14 @@ def add_container(content):
         data['_id'] = "c_" + str(next(uniqueid()))
         data['name'] = name
         data['size'] = size
-        check = mdb.check_container(name)
+        query = {'name': name}
+        check = mdb.check_data(query, CONTAINER)
         if check:
-            result = mdb.get_container_by_name(name)
+            result = mdb.get_data_by_name(query, CONTAINER)
             response.append(result)
         else:
-            result = mdb.add_container(data)
+            mdb.add_data(data, CONTAINER)
+            result = mdb.get_data_by_name(query, CONTAINER)
             response.append(result)
     return response
 
@@ -104,31 +112,39 @@ def add_snapshots(content):
         snapshots = snap_dict['snapshot']
         data = {}
         for key, value in snapshots.items():
-            container = mdb.get_container_by_name(key)
+            query1 = {'name':key}
+            container = mdb.get_data_by_name(query1, CONTAINER)
             items = []
             for item in value:
-                item = mdb.get_item_by_name(item)
+                query2 = {'name':item}
+                item = mdb.get_data_by_name(query2, ITEM)
                 items.append(item['_id'])
             data[container['_id']] = items
 
         dict['_id'] = "s_"+ str(next(uniqueid()))
         dict['name'] = name
         dict['snapshot'] = data
-
-        check = mdb.check_snapshot(name)
+        query = {'name': name}
+        check = mdb.check_data(query, SNAPSHOT)
         if check:
             result = mdb.get_snapshot_by_name(name)
             response.append(result)
         else:
-            result = mdb.add_snapshot(dict)
+            mdb.add_data(dict, SNAPSHOT)
+            result = mdb.get_snapshot_by_name(name)
             response.append(result)
     return response
 
 
 @app.route('/arrangement', methods=['GET'])
+@app.route('/arrangement/<string:arrangement_id>', methods=['GET'])
 @app.route('/api/v1/arrangements', methods=['GET'])
-def get_arrangement():
-    return mdb.get_all_arrangement()
+@app.route('/api/v1/<string:arrangement_id>', methods=['GET'])
+def get_arrangement(arrangement_id=None):
+    if arrangement_id is None:
+        return mdb.get_all_arrangement()
+    else:
+        return mdb.get_data_by_id(arrangement_id)
 
 
 if __name__ == '__main__':
