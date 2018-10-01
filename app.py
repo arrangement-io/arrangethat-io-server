@@ -19,7 +19,6 @@ def uniqueid():
 def home_page():
     return "Arrange That!"
 
-# Create arrangement
 @app.route('/arrangement', methods=['POST'])
 @app.route('/api/v1/arrangement', methods=['POST'])
 def add_arrangement():
