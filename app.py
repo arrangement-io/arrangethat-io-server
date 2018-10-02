@@ -21,16 +21,16 @@ def home_page():
 
 @app.route('/arrangement', methods=['POST'])
 @app.route('/api/v1/arrangement', methods=['POST'])
-def add_arrangement():
+def create_arrangement():
     content = request.json
     try:
         data = {}
         name = content['name']
 
         is_deleted = content['is_deleted']
-        items = add_item(content)
-        containers = add_container(content)
-        snapshots = add_snapshots(content)
+#         items = add_item(content)
+#         containers = add_container(content)
+#         snapshots = add_snapshots(content)
 
         data["_id"] = "a_"+str(next(uniqueid()))
         data["name"] = name
@@ -52,84 +52,6 @@ def add_arrangement():
         print('get_arrangement() :: Got exception: %s' % exp)
         print(traceback.format_exc())
         return jsonify({"error": '1', 'result': 'Some is went wrong!'})
-
-
-def add_item(content):
-    items = content['item']
-    response = []
-    for item in items:
-        name = item['name']
-        size = item['size']
-        data = {}
-        data['_id'] = "i_"+str(next(uniqueid()))
-        data['name'] = name
-        data['size'] = size
-        query = {'name': name}
-        check = mdb.check_data(query, ITEM)
-        if check:
-            result = mdb.get_data_by_name(query, ITEM)
-            response.append(result)
-        else:
-            mdb.add_data(data, ITEM)
-            result = mdb.get_data_by_name(query, ITEM)
-            response.append(result)
-    return response
-
-
-def add_container(content):
-    containers = content['containers']
-    response = []
-    for container in containers:
-        data = {}
-        name = container['name']
-        size = container['size']
-        data['_id'] = "c_" + str(next(uniqueid()))
-        data['name'] = name
-        data['size'] = size
-        query = {'name': name}
-        check = mdb.check_data(query, CONTAINER)
-        if check:
-            result = mdb.get_data_by_name(query, CONTAINER)
-            response.append(result)
-        else:
-            mdb.add_data(data, CONTAINER)
-            result = mdb.get_data_by_name(query, CONTAINER)
-            response.append(result)
-    return response
-
-
-def add_snapshots(content):
-    snapshots_data = content['snapshots']
-    response = []
-    for snap_dict in snapshots_data:
-        dict = {}
-        name = snap_dict['name']
-        snapshots = snap_dict['snapshot']
-        data = {}
-        for key, value in snapshots.items():
-            query1 = {'name':key}
-            container = mdb.get_data_by_name(query1, CONTAINER)
-            items = []
-            for item in value:
-                query2 = {'name':item}
-                item = mdb.get_data_by_name(query2, ITEM)
-                items.append(item['_id'])
-            data[container['_id']] = items
-
-        dict['_id'] = "s_"+ str(next(uniqueid()))
-        dict['name'] = name
-        dict['snapshot'] = data
-        query = {'name': name}
-        check = mdb.check_data(query, SNAPSHOT)
-        if check:
-            result = mdb.get_snapshot_by_name(name)
-            response.append(result)
-        else:
-            mdb.add_data(dict, SNAPSHOT)
-            result = mdb.get_snapshot_by_name(name)
-            response.append(result)
-    return response
-
 
 @app.route('/arrangement', methods=['GET'])
 @app.route('/arrangement/<string:arrangement_id>', methods=['GET'])
