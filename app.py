@@ -28,8 +28,8 @@ def home_page():
     return "Arrange That!"
 
 
-@app.route('/arrangements', methods=['POST'])
-@app.route('/api/v1/arrangements', methods=['POST'])
+@app.route('/arrangement', methods=['POST'])
+@app.route('/api/v1/arrangement', methods=['POST'])
 def save_arrangement():
     arrangement = request.json
     json_data = validate_arrangement(arrangement)
@@ -44,10 +44,10 @@ def save_arrangement():
         return jsonify({'message':'json is not validate'})
 
 
-@app.route('/arrangements', methods=['GET'])
-@app.route('/api/v1/arrangements', methods=['GET'])
-@app.route('/arrangements/<string:arrangement_id>', methods=['GET'])
-@app.route('/api/v1/arrangements/<string:arrangement_id>', methods=['GET'])
+@app.route('/arrangement', methods=['GET'])
+@app.route('/api/v1/arrangement', methods=['GET'])
+@app.route('/arrangement/<string:arrangement_id>', methods=['GET'])
+@app.route('/api/v1/arrangement/<string:arrangement_id>', methods=['GET'])
 def get_arrangement(arrangement_id=None):
     if arrangement_id is None:
         return JSONEncoder().encode(mdb.get_all_arrangements())
@@ -68,14 +68,14 @@ def validate_arrangement(arrangement):
         container_key_id = ''
         item_value_id = ''
 
-        arrangement_id = arrangement['id']
+        arrangement_id = arrangement['_id']
         name = arrangement['name']
         timestamp = arrangement['timestamp']
         is_deleted = arrangement['is_deleted']
         items = arrangement['items']
 
         for item in items:
-            item_id = item['id']
+            item_id = item['_id']
             item_name = item['name']
             item_size = item['size']
             if item_id == "" or item_name == "" or item_size == "":
@@ -83,7 +83,7 @@ def validate_arrangement(arrangement):
 
         containers = arrangement['containers']
         for container in containers:
-            container_id = container['id']
+            container_id = container['_id']
             container_name = container['name']
             container_size = container['size']
             if container_id == "" or container_name == "" or container_size == "":
@@ -91,7 +91,7 @@ def validate_arrangement(arrangement):
 
         snapshots = arrangement['snapshots']
         for snapshot in snapshots:
-            snapshot_id = snapshot['id']
+            snapshot_id = snapshot['_id']
             snapshot_name = snapshot['name']
             snapshot_dict = snapshot['snapshot']
             if snapshot_id == "" or snapshot_name == "" or snapshot_dict == "":

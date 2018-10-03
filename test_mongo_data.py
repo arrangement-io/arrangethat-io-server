@@ -20,7 +20,7 @@ class Mdb:
     #               Replace Arrangement       #
     ###########################################
     def replace_arrangement(self, arrangement):
-        self.db["arrangement"].replace_one({"id": arrangement["id"]}, arrangement)
+        self.db["arrangement"].replace_one({"_id": arrangement["_id"]}, arrangement)
 
     ###########################################
     #              GET ALL ARRANGEMENT DATA   #
@@ -38,7 +38,7 @@ class Mdb:
     ###########################################
     def get_arrangement_by_id(self, id):
         try:
-            result = self.db["arrangement"].find({"id": id})
+            result = self.db["arrangement"].find({"_id": id})
             response = []
             for data in result:
                 response.append(data)
@@ -55,7 +55,7 @@ class Mdb:
     #         CHECK ARRANGEMENT EXISTS        #
     ###########################################
     def check_arrangement_exists(self, arrangement):
-        return self.db["arrangement"].find({"id": arrangement["id"]}).count() > 0
+        return self.db["arrangement"].find({"_id": arrangement["_id"]}).count() > 0
     
 
 if __name__ == "__main__":
