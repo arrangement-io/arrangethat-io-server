@@ -16,12 +16,6 @@ class JSONEncoder(json.JSONEncoder):
             return str(o)
         return json.JSONEncoder.default(self, o)
 
-def uniqueid():
-    seed = random.getrandbits(32)
-    while True:
-        yield seed
-        seed += 1
-
 
 @app.route("/")
 def home_page():

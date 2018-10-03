@@ -36,12 +36,12 @@ class Mdb:
     ###########################################
     #    GET SINGLE DATA BY ARRANGEMENT_ID    #
     ###########################################
-    def get_arrangement_by_id(self, id):
+    def get_arrangement_by_id(self, arrangement_id):
         try:
-            result = self.db["arrangement"].find({"_id": id})
+            result = self.db["arrangement"].find({"_id": arrangement_id})
             response = []
-            for data in result:
-                response.append(data)
+            for arrangement in result:
+                response.append(arrangement)
             if len(response) == 1:
                 return jsonify({"arrangement": response[0]})
             else:
