@@ -1,6 +1,6 @@
 # This is the layout of the data
 # Arrangement: 
-# {id: a_,
+# {_id: a_,
 #  name: _,
 #  # owner: _,
 #  # users: [_ids_],
@@ -12,19 +12,19 @@
 # }
 #
 # Snapshot:
-# {id: s_,
+# {_id: s_,
 #  name: _,
 #  snapshot: {container1_id: [item1_id, item2_id], container2_id: [item3_id]}
 # }
 # 
 # Item:
-# {id: i_,
+# {_id: i_,
 #  name: _,
 #  size: 1,
 # }
 #
 # Container:
-# {id: c_,
+# {_id: c_,
 #  name: _,
 #  size: 8
 # }
@@ -39,20 +39,20 @@ def create_random_id(prepended_letter=""):
   return prepended_letter + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
 
 def create_container(name, size):
-  return {"id": create_random_id('c'), "name": name, "size": size}
+  return {"_id": create_random_id('c'), "name": name, "size": size}
 
 def create_item(name, size=1):
-  return {"id": create_random_id('i'), "name": name, "size": size}
+  return {"_id": create_random_id('i'), "name": name, "size": size}
 
 def create_snapshot(name):
-  return {"id": create_random_id('s'), "name": name, "snapshot": {}}
+  return {"_id": create_random_id('s'), "name": name, "snapshot": {}}
 
 
 class Arrangement(object):
   def __init__(self, name):
     self.data = {}
     self.data["name"] = name
-    self.data["id"] = create_random_id("a")
+    self.data["_id"] = create_random_id("a")
     self.data["items"] = []
     self.data["containers"] = []
     self.data["is_deleted"] = False
@@ -67,7 +67,7 @@ class Arrangement(object):
   def add_container(self, name, size):
     container = create_container(name, size)
     self.data['containers'].append(container)
-    self.data['snapshots'][0]['snapshot'][container['id']] = [] 
+    self.data['snapshots'][0]['snapshot'][container['_id']] = [] 
 
   def get_container(self, name):
     for container in self.data['containers']:
@@ -76,8 +76,8 @@ class Arrangement(object):
 
   def add_item_to_container(self, name, container_name):
     item = self.add_item(name)
-    container_id = self.get_container(container_name)['id']
-    self.data['snapshots'][0]['snapshot'][container_id].append(item['id'])
+    container_id = self.get_container(container_name)['_id']
+    self.data['snapshots'][0]['snapshot'][container_id].append(item['_id'])
 
   def build(self):
     return json.dumps(self.data, sort_keys=True, indent=4)
@@ -92,7 +92,7 @@ def main():
   arrangement.add_item_to_container('nathan', 'nathan car')
   arrangement.add_item_to_container('moses', 'nathan car')
 
-  print arrangement.build()
+  print(arrangement.build())
 
 if __name__ == "__main__":
   main()
