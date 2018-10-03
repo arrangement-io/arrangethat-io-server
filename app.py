@@ -28,11 +28,10 @@ def home_page():
     return "Arrange That!"
 
 
-@app.route('/arrangement', methods=['POST'])
-@app.route('/api/v1/arrangement', methods=['POST'])
+@app.route('/arrangements', methods=['POST'])
+@app.route('/api/v1/arrangements', methods=['POST'])
 def save_arrangement():
     arrangement = request.json
-    # TODO: validate_arrangement(arrangement)
     json_data = validate_arrangement(arrangement)
     if json_data == True:
         arrangement_exists = mdb.check_arrangement_exists(arrangement)
@@ -41,15 +40,14 @@ def save_arrangement():
         else:
             mdb.add_arrangement(arrangement)
         return JSONEncoder().encode(arrangement)
-        # return jsonify(arrangement)
     else:
         return jsonify({'message':'json is not validate'})
 
 
-@app.route('/arrangement', methods=['GET'])
-@app.route('/api/v1/arrangement', methods=['GET'])
-@app.route('/arrangement/<string:arrangement_id>', methods=['GET'])
-@app.route('/api/v1/arrangement/<string:arrangement_id>', methods=['GET'])
+@app.route('/arrangements', methods=['GET'])
+@app.route('/api/v1/arrangements', methods=['GET'])
+@app.route('/arrangements/<string:arrangement_id>', methods=['GET'])
+@app.route('/api/v1/arrangements/<string:arrangement_id>', methods=['GET'])
 def get_arrangement(arrangement_id=None):
     if arrangement_id is None:
         return JSONEncoder().encode(mdb.get_all_arrangements())
