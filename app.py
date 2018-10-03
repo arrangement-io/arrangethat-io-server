@@ -21,37 +21,17 @@ def home_page():
 
 @app.route('/arrangement', methods=['POST'])
 @app.route('/api/v1/arrangement', methods=['POST'])
-def create_arrangement():
-    content = request.json
-    try:
-        data = {}
-        name = content['name']
-
-        is_deleted = content['is_deleted']
-#         items = add_item(content)
-#         containers = add_container(content)
-#         snapshots = add_snapshots(content)
-
-        data["_id"] = "a_"+str(next(uniqueid()))
-        data["name"] = name
-        data["item"] = items
-        data["snapshots"] = snapshots
-        data["is_deleted"] = is_deleted
-        data["containers"] = containers
-        data["timestamp"] = datetime.datetime.today().strftime("%a %b %d %X  %Y ")
-        query = {'name': name}
-
-        check = mdb.check_data(query, ARRANGEMENT)
-        if check:
-            return jsonify({"error": '1', 'result': 'data already saved!' })
-        else:
-            mdb.add_data(data, ARRANGEMENT)
-            return jsonify({"error": '0', 'result': data})
-
-    except Exception as exp:
-        print('get_arrangement() :: Got exception: %s' % exp)
-        print(traceback.format_exc())
-        return jsonify({"error": '1', 'result': 'Some is went wrong!'})
+def save_arrangement():
+    arrangement = request.json
+    # TODO: validate_arrangement(arrangement) 
+    # name = arrangement['name']
+    # query = {'name': name}
+    arrangement_exists = mdb.check_arrangement_exists(arrangement)
+    if arrangement_exists:
+        mdb.replace_arrangement(arrangement)
+    else:
+        mdb.add_arrangement(arrangement)
+    return jsonify(arrangement)
 
 @app.route('/arrangement', methods=['GET'])
 @app.route('/arrangement/<string:arrangement_id>', methods=['GET'])
@@ -59,10 +39,10 @@ def create_arrangement():
 @app.route('/api/v1/<string:arrangement_id>', methods=['GET'])
 def get_arrangement(arrangement_id=None):
     if arrangement_id is None:
-        return mdb.get_all_arrangement()
+        return jsonify(mdb.get_all_arrangement())
     else:
-        return mdb.get_data_by_id(arrangement_id)
+        return jsonify(mdb.get_arrangement_by_id(arrangement_id))
 
 
 if __name__ == '__main__':
-    app.run(host = 'localhost', port = 8080, debug = True)
+    app.run(debug = True)

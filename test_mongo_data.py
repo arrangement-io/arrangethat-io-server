@@ -11,23 +11,25 @@ class Mdb:
 
 
     ###########################################
-    #                   INSERT DATA           #
+    #               Add Arrangement           #
     ###########################################
-    def add_data(self, data, collection):
-        mongo_collection = self.db[collection]
-        return mongo_collection.insert(data)
+    def add_arrangement(self, arrangement):
+        return self.db["arrangement"].insert(arrangement)
+
+    ###########################################
+    #               Replace Arrangement       #
+    ###########################################
+    def replace_arrangement(self, arrangement):
+        self.db["arrangement"].replace_one({'id': arrangement['id']}, arrangement)
 
 
     ###########################################
-    #        GET ALL ARRANGEMENT DATA         #
+    #              GET ALL ARRANGEMENT DATA   #
     ###########################################
     def get_all_arrangement(self):
         try:
-            collection = self.db["arrangement"]
-            result = collection.find({})
-            ret = []
-            for arrangement in result:
-                ret.append(data)
+            return list(self.db["arrangement"].find({}))
+
         except Exception as exp:
             print("get_all_arrangement() :: Got exception: %s", exp)
             print(traceback.format_exc())
@@ -40,23 +42,20 @@ class Mdb:
     def get_arrangement_by_id(self, id):
         try:
             collection = self.db["arrangement"]
-            result = collection.find({'_id': id})
-            ret = []
-            for data in result:
-                ret.append(data)
+            result = collection.find({'id': id})
+            if len(result) == 1:
+                return jsonify(result[0])
+            else:
+                return "no arrangement found"
         except Exception as exp:
             print("get_arrangement_by_id() :: Got exception: %s", exp)
             print(traceback.format_exc())
-        return jsonify({'arrangement': ret})
 
-    
     ###########################################
-    #         CHECK DATA (EXIST OR NOT)       #
+    #         CHECK ARRANGEMENT EXISTS        #
     ###########################################
-    def check_data(self, query, collection):
-        mongo_collection = self.db[collection]
-        return mongo_collection.find(query).count() > 0
-
+    def check_arrangement_exists(self, arrangement):
+        return self.db["arrangement"].find({'id':arrangement['id']}).count() > 0
     
 
 if __name__ == "__main__":
