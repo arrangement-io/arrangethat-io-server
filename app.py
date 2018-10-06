@@ -1,13 +1,12 @@
 from flask import Flask, jsonify, request
 import traceback
-import random
-import datetime
 from test_mongo_data import Mdb
 from config import ITEM, CONTAINER, ARRANGEMENT, SNAPSHOT
 import json
 from bson import ObjectId
-
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
 mdb = Mdb()
 
 class JSONEncoder(json.JSONEncoder):
@@ -113,4 +112,4 @@ def validate_arrangement(arrangement):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host = 'localhost', port = 8080, debug = True)
