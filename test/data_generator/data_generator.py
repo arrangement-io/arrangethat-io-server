@@ -29,6 +29,37 @@
 #  size: 8
 # }
 # 
+# This is the layout of the data
+# Arrangement: 
+# {_id: _,
+#  name: _,
+#  # owner: _,
+#  # users: [_ids_],
+#  items: [_item_objects_],
+#  containers: [_container_objects_],
+#  is_deleted: _,
+#  timestamp: _,
+#  snapshots: [_snapshot_objects_]
+# }
+#
+# Snapshot:
+# {_id: _,
+#  name: _,
+#  snapshot: {container1_id: [item1_id, item2_id], container2_id: [item3_id]}
+# }
+# 
+# Item:
+# {_id: i1,
+#  name: _,
+#  size: 1,
+# }
+#
+# Container:
+# {_id: c1,
+#  name: _,
+#  size: 8
+# }
+# 
 
 import json
 import random
@@ -58,7 +89,6 @@ class Arrangement(object):
     self.data["is_deleted"] = False
     self.data["snapshots"] = [create_snapshot("only snapshot")]
     self.data["timestamp"] = time.time()
-  
   def add_item(self, name):
     item = create_item(name)
     self.data['items'].append(create_item(name))
@@ -96,4 +126,3 @@ def main():
 
 if __name__ == "__main__":
   main()
-
