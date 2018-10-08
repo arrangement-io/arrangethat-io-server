@@ -64,39 +64,54 @@ def validate_arrangement(arrangement):
         arrangement_id = arrangement['_id']
         name = arrangement['name']
         timestamp = arrangement['timestamp']
+        modified_timestamp =arrangement['modified_timestamp']
         is_deleted = arrangement['is_deleted']
-        items = arrangement['items']
 
+        items = arrangement['items']
+        item_id_list = []
         for item in items:
             item_id = item['_id']
             item_name = item['name']
             item_size = item['size']
+            item_id_list.append(item_id)
             if item_id == "" or item_name == "" or item_size == "":
-                break
+                return False
 
         containers = arrangement['containers']
+        container_id_list = []
         for container in containers:
             container_id = container['_id']
             container_name = container['name']
             container_size = container['size']
+
+            container_id_list.append(container_id)
             if container_id == "" or container_name == "" or container_size == "":
-                break
+                return False
 
         snapshots = arrangement['snapshots']
+
         for snapshot in snapshots:
             snapshot_id = snapshot['_id']
             snapshot_name = snapshot['name']
             snapshot_dict = snapshot['snapshot']
             if snapshot_id == "" or snapshot_name == "" or snapshot_dict == "":
-                break
-            for key, value in snapshot_dict.items():
-                container_key_id = key
+                return False
+            else:
+                for key, value in snapshot_dict.items():
+                    container_key_id = key
+                    if container_key_id in container_id_list:
+                        if True:
+                            for item_value_id in value:
+                                if item_value_id in item_id_list:
+                                    if True:
+                                        if container_key_id == "" or not item_value_id:
+                                            return False
+                                else:
+                                    return False
+                    else:
+                        return False
 
-                for item_value_id in value:
-                    if container_key_id == "" or not item_value_id:
-                        break
-
-        if(arrangement_id and name and timestamp and item_id
+        if(arrangement_id and name and timestamp and modified_timestamp and item_id
                 and item_name and item_size and container_id and container_name
                 and container_size and snapshot_id and snapshot_name and container_key_id
                 and item_value_id and not is_deleted):
