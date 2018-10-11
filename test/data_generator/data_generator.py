@@ -66,63 +66,66 @@ import random
 import string
 import time
 
-def create_random_id(prepended_letter=""):
-  return prepended_letter + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
 
-def create_container(name, size):
-  return {"_id": create_random_id('c'), "name": name, "size": size}
-
-def create_item(name, size=1):
-  return {"_id": create_random_id('i'), "name": name, "size": size}
-
-def create_snapshot(name):
-  return {"_id": create_random_id('s'), "name": name, "snapshot": {}}
+# def create_random_id(prepended_letter=""):
+#     return prepended_letter + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
 
 
-class Arrangement(object):
-  def __init__(self, name):
-    self.data = {}
-    self.data["name"] = name
-    self.data["_id"] = create_random_id("a")
-    self.data["items"] = []
-    self.data["containers"] = []
-    self.data["is_deleted"] = False
-    self.data["snapshots"] = [create_snapshot("only snapshot")]
-    self.data["timestamp"] = time.time()
-  def add_item(self, name):
-    item = create_item(name)
-    self.data['items'].append(create_item(name))
-    return item
+def create_container(container_id, name, size):
+    return {"_id": container_id, "name": name, "size": size}
 
-  def add_container(self, name, size):
-    container = create_container(name, size)
-    self.data['containers'].append(container)
-    self.data['snapshots'][0]['snapshot'][container['_id']] = [] 
 
-  def get_container(self, name):
-    for container in self.data['containers']:
-      if container['name'] == name:
-        return container
+def create_item(item_id, name, size):
+    return {"_id": item_id, "name": name, "size": size}
 
-  def add_item_to_container(self, name, container_name):
-    item = self.add_item(name)
-    container_id = self.get_container(container_name)['_id']
-    self.data['snapshots'][0]['snapshot'][container_id].append(item['_id'])
 
-  def build(self):
-    return json.dumps(self.data, sort_keys=True, indent=4)
+def create_snapshot(snapshot_id, name):
+    return {"_id": snapshot_id, "name": name, "snapshot": {}}
 
-def main():
-  arrangement = Arrangement("first arrangement")
-  arrangement.add_container("chia van", 8)
-  arrangement.add_container("nathan car", 8)
-  arrangement.add_item_to_container('gideon', 'chia van')
-  arrangement.add_item_to_container('gideon luggage', 'chia van')
-  arrangement.add_item_to_container('jeff', 'chia van')
-  arrangement.add_item_to_container('nathan', 'nathan car')
-  arrangement.add_item_to_container('moses', 'nathan car')
 
-  print(arrangement.build())
+class Arrangement:
+    data = {}
 
-if __name__ == "__main__":
-  main()
+    def pass_json(self, arrangement):
+        self.data["name"] = arrangement['name']
+        self.data["_id"] = arrangement['_id']
+        self.data["items"] = []
+        self.data["containers"] = []
+        self.data["is_deleted"] = arrangement['is_deleted']
+        self.data["timestamp"] = arrangement['timestamp']
+        self.data["modified_timestamp"] = arrangement['modified_timestamp']
+        containers = arrangement['containers']
+        for container in containers:
+            container_id = container['_id']
+            container_name = container['name']
+            container_size = container['size']
+            self.add_container(container_id, container_name, container_size)
+        items = arrangement['items']
+        for item in items:
+            item_id = item['_id']
+            item_name = item['name']
+            item_size = item['size']
+            self.add_item(item_id, item_name, item_size)
+        snapshots_data = arrangement['snapshots']
+        for snapshot in snapshots_data:
+            snapshot_id = snapshot['_id']
+            snapshot_name = snapshot['name']
+            snapshot_snapshots = snapshot['snapshot']
+            self.data["snapshots"] = [create_snapshot(snapshot_id, snapshot_name)]
+            data1 = {}
+            for key, value in snapshot_snapshots.items():
+                data1[key] = value
+                self.data['snapshots'][0]['snapshot'][key] = value
+
+    def add_item(self, item_id, name, size):
+        item = create_item(item_id, name, size)
+        self.data['items'].append(item)
+
+    def add_container(self, container_id, name, size):
+        container = create_container(container_id, name, size)
+        self.data['containers'].append(container)
+
+    def build(self):
+        return self.data
+        # return json.dumps(self.data, sort_keys=True, indent=4)
+
