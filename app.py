@@ -1,13 +1,18 @@
 from flask import Flask, jsonify, request
 import traceback
 from test_mongo_data import Mdb
+from test.data_generator.data_generator import Arrangement
+
 from config import ITEM, CONTAINER, ARRANGEMENT, SNAPSHOT
 import json
 from bson import ObjectId
 from flask_cors import CORS
+
+
 app = Flask(__name__)
 CORS(app)
 mdb = Mdb()
+arrangement_obj = Arrangement()
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
@@ -27,12 +32,15 @@ def save_arrangement():
     arrangement = request.json
     json_data = validate_arrangement(arrangement)
     if json_data == True:
-        arrangement_exists = mdb.check_arrangement_exists(arrangement)
+        arrangement_obj.pass_json(arrangement)
+        data = arrangement_obj.build()
+
+        arrangement_exists = mdb.check_arrangement_exists(data)
         if arrangement_exists:
-            mdb.replace_arrangement(arrangement)
+            mdb.replace_arrangement(data)
         else:
-            mdb.add_arrangement(arrangement)
-        return JSONEncoder().encode(arrangement)
+            mdb.add_arrangement(data)
+        return JSONEncoder().encode(data)
     else:
         return jsonify({'message':'json is not validate'})
 
@@ -50,21 +58,10 @@ def get_arrangement(arrangement_id=None):
 
 def validate_arrangement(arrangement):
     try:
-        item_id = ''
-        item_name = ''
-        item_size = ''
-        container_id = ''
-        container_name = ''
-        container_size = ''
-        snapshot_id = ''
-        snapshot_name = ''
-        container_key_id = ''
-        item_value_id = ''
-
         arrangement_id = arrangement['_id']
         name = arrangement['name']
         timestamp = arrangement['timestamp']
-        modified_timestamp =arrangement['modified_timestamp']
+        modified_timestamp = arrangement['modified_timestamp']
         is_deleted = arrangement['is_deleted']
 
         items = arrangement['items']
@@ -100,14 +97,12 @@ def validate_arrangement(arrangement):
                 for key, value in snapshot_dict.items():
                     container_key_id = key
                     if container_key_id in container_id_list:
-                        if True:
-                            for item_value_id in value:
-                                if item_value_id in item_id_list:
-                                    if True:
-                                        if container_key_id == "" or not item_value_id:
-                                            return False
-                                else:
+                        for item_value_id in value:
+                            if item_value_id in item_id_list:
+                                if container_key_id == "" or not item_value_id:
                                     return False
+                            else:
+                                return False
                     else:
                         return False
 
