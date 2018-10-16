@@ -67,10 +67,6 @@ import string
 import time
 
 
-# def create_random_id(prepended_letter=""):
-#     return prepended_letter + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
-
-
 def create_container(container_id, name, size):
     return {"_id": container_id, "name": name, "size": size}
 
@@ -127,5 +123,4 @@ class Arrangement:
 
     def build(self):
         return self.data
-        # return json.dumps(self.data, sort_keys=True, indent=4)
 
