@@ -91,9 +91,19 @@ def validate_arrangement(arrangement):
             snapshot_id = snapshot['_id']
             snapshot_name = snapshot['name']
             snapshot_dict = snapshot['snapshot']
-            if snapshot_id == "" or snapshot_name == "" or snapshot_dict == "":
+            snapshot_list = snapshot['unassigned']
+            if snapshot_id == "" or snapshot_name == "" or snapshot_dict == "" or snapshot_list == "":
                 return False
             else:
+                if snapshot_list == []:
+                    pass
+                else:
+                    for data in snapshot_list:
+                        if data in item_id_list:
+                            print(data)
+                        else:
+                            return False
+
                 for key, value in snapshot_dict.items():
                     container_key_id = key
                     if container_key_id in container_id_list:
