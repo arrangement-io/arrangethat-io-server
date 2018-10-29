@@ -1,6 +1,6 @@
 # This is the layout of the data
-# Arrangement: 
-# {_id: a_,
+# Arrangement:
+# {id: a,
 #  name: _,
 #  # owner: _,
 #  # users: [_ids_],
@@ -12,25 +12,32 @@
 # }
 #
 # Snapshot:
-# {_id: s_,
+# {id: s,
 #  name: _,
-#  snapshot: {container1_id: [item1_id, item2_id], container2_id: [item3_id]}
+#  snapshot: {container1_id: [item1_id, item2_id], container2_id: [item3_id]},
+#  unassigned: [item4_id, item5_id, ...]  # <- this is the change
 # }
-# 
+#
 # Item:
-# {_id: i_,
+# {id: i,
 #  name: _,
 #  size: 1,
 # }
 #
 # Container:
-# {_id: c_,
+# {id: c,
 #  name: _,
 #  size: 8
 # }
 
 import json
+import random
 import string
+import time
+
+
+# def create_random_id(prepended_letter=""):
+#     return prepended_letter + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
 
 
 def create_container(container_id, name, size):
@@ -41,8 +48,8 @@ def create_item(item_id, name, size):
     return {"_id": item_id, "name": name, "size": size}
 
 
-def create_snapshot(snapshot_id, name):
-    return {"_id": snapshot_id, "name": name, "snapshot": {}}
+def create_snapshot(snapshot_id, name, snapshot_unassigned):
+    return {"_id": snapshot_id, "name": name, "snapshot": {}, "unassigned": snapshot_unassigned}
 
 
 class Arrangement:
@@ -73,7 +80,8 @@ class Arrangement:
             snapshot_id = snapshot['_id']
             snapshot_name = snapshot['name']
             snapshot_snapshots = snapshot['snapshot']
-            self.data["snapshots"] = [create_snapshot(snapshot_id, snapshot_name)]
+            snapshot_unassigned = snapshot['unassigned']
+            self.data["snapshots"] = [create_snapshot(snapshot_id, snapshot_name, snapshot_unassigned)]
             data1 = {}
             for key, value in snapshot_snapshots.items():
                 data1[key] = value
@@ -89,4 +97,5 @@ class Arrangement:
 
     def build(self):
         return self.data
+        # return json.dumps(self.data, sort_keys=True, indent=4)
 
