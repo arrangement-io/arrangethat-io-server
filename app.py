@@ -65,12 +65,20 @@ def home_page():
         return res.read()
 
     return res.read()
-    # return "Arrange That!"
 
+@app.route("/login", methods=['POST'])
+def login():
+    data = request.json
+    session['access_token'] = data['access_token'], ''
+    return jsonify({'message':'You are logged in.'})  
+    
+"""
+Comment out the login route 
 @app.route("/login")
 def login():
     callback=url_for('authorized', _external=True)
     return google.authorize(callback=callback)
+"""
 
 @app.route(REDIRECT_URI)
 @google.authorized_handler
