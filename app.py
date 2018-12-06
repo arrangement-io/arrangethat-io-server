@@ -46,9 +46,11 @@ class JSONEncoder(json.JSONEncoder):
 @app.route("/")
 def home_page():
     access_token = session.get('access_token')
+"""
+# This is not necessary since 
     if access_token is None:
         return redirect(url_for('login'))
-
+"""
     access_token = access_token[0]
     from urllib2 import Request, urlopen, URLError
 
@@ -71,14 +73,6 @@ def login():
     data = request.json
     session['access_token'] = data['access_token'], ''
     return jsonify({'message':'You are logged in.'})  
-    
-"""
-Comment out the login route 
-@app.route("/login")
-def login():
-    callback=url_for('authorized', _external=True)
-    return google.authorize(callback=callback)
-"""
 
 @app.route(REDIRECT_URI)
 @google.authorized_handler
