@@ -42,15 +42,12 @@ class JSONEncoder(json.JSONEncoder):
             return str(o)
         return json.JSONEncoder.default(self, o)
 
-
 @app.route("/")
 def home_page():
     access_token = session.get('access_token')
-"""
-# This is not necessary since 
     if access_token is None:
         return redirect(url_for('login'))
-"""
+
     access_token = access_token[0]
     from urllib2 import Request, urlopen, URLError
 
@@ -67,7 +64,8 @@ def home_page():
         return res.read()
 
     return res.read()
-
+   
+      
 @app.route("/login", methods=['POST'])
 def login():
     data = request.json
