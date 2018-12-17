@@ -54,6 +54,8 @@ class Arrangement:
     def pass_json(self, arrangement):
         self.data["name"] = arrangement['name']
         self.data["_id"] = arrangement['_id']
+        self.data["owner_id"] = arrangement['owner_id']
+        self.data["user_id"] = arrangement['user_id']
         self.data["items"] = []
         self.data["containers"] = []
         self.data["is_deleted"] = arrangement['is_deleted']
