@@ -1,9 +1,9 @@
 # This is the layout of the data
 # Arrangement:
-# {id: a,
+# {_id: a,
 #  name: _,
-#  # owner: _,
-#  # users: [_ids_],
+#  # owner: owner_id #[google_id],  <--- change this from user_id to google_id, 
+#  # users: user_id  #[google_id],   <--- change this from user_id to google_id
 #  items: [_item_objects_],
 #  containers: [_container_objects_],
 #  is_deleted: _,
@@ -12,20 +12,20 @@
 # }
 #
 # Snapshot:
-# {id: s,
+# {_id: s,
 #  name: _,
 #  snapshot: {container1_id: [item1_id, item2_id], container2_id: [item3_id]},
 #  unassigned: [item4_id, item5_id, ...]  # <- this is the change
 # }
 #
 # Item:
-# {id: i,
+# {_id: i,
 #  name: _,
 #  size: 1,
 # }
 #
 # Container:
-# {id: c,
+# {_id: c,
 #  name: _,
 #  size: 8
 # }
@@ -34,10 +34,6 @@ import json
 import random
 import string
 import time
-
-
-# def create_random_id(prepended_letter=""):
-#     return prepended_letter + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
 
 
 def create_container(container_id, name, size):
@@ -97,5 +93,4 @@ class Arrangement:
 
     def build(self):
         return self.data
-        # return json.dumps(self.data, sort_keys=True, indent=4)
 
