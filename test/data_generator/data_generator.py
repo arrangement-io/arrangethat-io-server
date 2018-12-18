@@ -2,8 +2,8 @@
 # Arrangement:
 # {_id: a,
 #  name: _,
-#  # owner: owner_id #[google_id],  <--- change this from user_id to google_id, 
-#  # users: user_id  #[google_id],   <--- change this from user_id to google_id
+#  # owner: "owner_id",  <--- change this from user_id to google_id,
+#  # users: [user_id,google_id],   <--- change this from user_id to google_id
 #  items: [_item_objects_],
 #  containers: [_container_objects_],
 #  is_deleted: _,
@@ -54,8 +54,8 @@ class Arrangement:
     def pass_json(self, arrangement):
         self.data["name"] = arrangement['name']
         self.data["_id"] = arrangement['_id']
-        self.data["owner_id"] = arrangement['owner_id']
-        self.data["user_id"] = arrangement['user_id']
+        self.data["owner"] = arrangement['owner']
+        self.data["users"] = arrangement['users']
         self.data["items"] = []
         self.data["containers"] = []
         self.data["is_deleted"] = arrangement['is_deleted']
