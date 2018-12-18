@@ -43,7 +43,7 @@ class JSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
 
 
-@app.route("/")
+@app.route("/",methods=['GET'])
 def home_page():
     access_token = session.get('access_token')
     if access_token is None:
@@ -65,20 +65,18 @@ def home_page():
         return res.read()
 
     return res.read()
+    # return "Arrange That!"
 
 @app.route("/login", methods=['POST'])
 def login():
     data = request.json
     session['access_token'] = data['access_token'], ''
-    return jsonify({'message':'You are logged in.'})  
-    
-"""
-Comment out the login route 
-@app.route("/login")
+    return jsonify({'message':'You are logged in.'})
+
+""" @app.route("/login")
 def login():
     callback=url_for('authorized', _external=True)
-    return google.authorize(callback=callback)
-"""
+    return google.authorize(callback=callback) """
 
 @app.route(REDIRECT_URI)
 @google.authorized_handler
@@ -93,9 +91,11 @@ def get_access_token():
 
 @app.route('/arrangement', methods=['POST'])
 @app.route('/api/v1/arrangement', methods=['POST'])
+
 def save_arrangement():
     arrangement = request.json
     json_data = validate_arrangement(arrangement)
+
     if json_data == True:
         arrangement_obj.pass_json(arrangement)
         data = arrangement_obj.build()
@@ -106,8 +106,13 @@ def save_arrangement():
         else:
             mdb.add_arrangement(data)
         return JSONEncoder().encode(data)
+
+    elif json_data == 'invalid':
+        return jsonify({'message':'Invalid json format'})
+
     else:
         return jsonify({'message':'json is not validate'})
+
 
 
 @app.route('/arrangement', methods=['GET'])
@@ -115,8 +120,10 @@ def save_arrangement():
 @app.route('/arrangement/<string:arrangement_id>', methods=['GET'])
 @app.route('/api/v1/arrangement/<string:arrangement_id>', methods=['GET'])
 def get_arrangement(arrangement_id=None):
+
     if arrangement_id is None:
-        return JSONEncoder().encode(mdb.get_all_arrangements())
+
+        return null
     else:
         return mdb.get_arrangement_by_id(arrangement_id)
 
@@ -128,6 +135,8 @@ def validate_arrangement(arrangement):
         timestamp = arrangement['timestamp']
         modified_timestamp = arrangement['modified_timestamp']
         is_deleted = arrangement['is_deleted']
+        if arrangement_id and name :
+            return 'invalid'
 
         items = arrangement['items']
         item_id_list = []
@@ -198,3 +207,4 @@ def validate_arrangement(arrangement):
 
 if __name__ == '__main__':
     app.run(host = 'localhost', port = 8080, debug = True)
+
