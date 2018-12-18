@@ -2,8 +2,8 @@
 # Arrangement:
 # {_id: a,
 #  name: _,
-#  # owner: "owner_id",  <--- change this from user_id to google_id,
-#  # users: [user_id,google_id],   <--- change this from user_id to google_id
+#  # owner: "owner_id", 
+#  # users: [user_id...],   
 #  items: [_item_objects_],
 #  containers: [_container_objects_],
 #  is_deleted: _,
