@@ -65,12 +65,18 @@ def home_page():
         return res.read()
 
     return res.read()
+    # return "Arrange That!"
 
 @app.route("/login", methods=['POST'])
 def login():
     data = request.json
     session['access_token'] = data['access_token'], ''
     return jsonify({'message':'You are logged in.'})
+
+# @app.route("/login")
+# def login():
+#     callback=url_for('authorized', _external=True)
+#     return google.authorize(callback=callback)
 
 @app.route(REDIRECT_URI)
 @google.authorized_handler
@@ -101,9 +107,6 @@ def save_arrangement():
             mdb.add_arrangement(data)
         return JSONEncoder().encode(data)
 
-    elif json_data == 'invalid':
-        return jsonify({'message':'Invalid json format'})
-
     else:
         return jsonify({'message':'json is not validate'})
 
@@ -129,8 +132,6 @@ def validate_arrangement(arrangement):
         timestamp = arrangement['timestamp']
         modified_timestamp = arrangement['modified_timestamp']
         is_deleted = arrangement['is_deleted']
-        if arrangement_id and name :
-            return 'invalid'
 
         items = arrangement['items']
         item_id_list = []
@@ -201,4 +202,3 @@ def validate_arrangement(arrangement):
 
 if __name__ == '__main__':
     app.run(host = 'localhost', port = 8080, debug = True)
-
