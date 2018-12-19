@@ -35,7 +35,6 @@ google = oauth.remote_app('google',
                           consumer_key=GOOGLE_CLIENT_ID,
                           consumer_secret=GOOGLE_CLIENT_SECRET)
 
-
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, ObjectId):
@@ -46,7 +45,7 @@ class JSONEncoder(json.JSONEncoder):
 @app.route("/",methods=['GET'])
 def home_page():
     access_token = session.get('access_token')
-    if access_token is None:
+    if access_token  is None:
         return redirect(url_for('login'))
 
     access_token = access_token[0]
@@ -63,26 +62,21 @@ def home_page():
             session.pop('access_token', None)
             return redirect(url_for('login'))
         return res.read()
-
     return res.read()
-    # return "Arrange That!"
 
-@app.route("/login", methods=['POST'])
+
+@app.route("/login")
 def login():
-    data = request.json
-    session['access_token'] = data['access_token'], ''
-    return jsonify({'message':'You are logged in.'})
-
-# @app.route("/login")
-# def login():
-#     callback=url_for('authorized', _external=True)
-#     return google.authorize(callback=callback)
+    callback=url_for('authorized', _external=True)
+    return google.authorize(callback=callback)
 
 @app.route(REDIRECT_URI)
 @google.authorized_handler
 def authorized(resp):
     access_token = resp['access_token']
-    session['access_token'] = access_token, ''
+    session['access_token'] = access_token
+    session.modified = True
+    print(session['access_token'])
     return redirect(url_for('home_page'))
 
 @google.tokengetter
@@ -93,10 +87,21 @@ def get_access_token():
 @app.route('/api/v1/arrangement', methods=['POST'])
 
 def save_arrangement():
+
     arrangement = request.json
     json_data = validate_arrangement(arrangement)
 
-    if json_data == True:
+    google_id = arrangement.get("user")
+
+    sync_users = []
+    if 'users' in arrangement:
+        for user in arrangement['users']:
+            obj_user = {"user": user, "google_id": google_id }
+            sync_users.append(obj_user)
+
+    arrangement['users'] = sync_users
+
+    if json_data:
         arrangement_obj.pass_json(arrangement)
         data = arrangement_obj.build()
 
@@ -127,11 +132,13 @@ def get_arrangement(arrangement_id=None):
 
 def validate_arrangement(arrangement):
     try:
+
         arrangement_id = arrangement['_id']
         name = arrangement['name']
         timestamp = arrangement['timestamp']
         modified_timestamp = arrangement['modified_timestamp']
         is_deleted = arrangement['is_deleted']
+
 
         items = arrangement['items']
         item_id_list = []
