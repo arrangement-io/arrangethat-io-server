@@ -35,6 +35,7 @@ google = oauth.remote_app('google',
                           consumer_key=GOOGLE_CLIENT_ID,
                           consumer_secret=GOOGLE_CLIENT_SECRET)
 
+
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, ObjectId):
@@ -138,10 +139,7 @@ def validate_arrangement(arrangement):
         timestamp = arrangement['timestamp']
         modified_timestamp = arrangement['modified_timestamp']
         is_deleted = arrangement['is_deleted']
-<<<<<<< HEAD
 
-=======
->>>>>>> 43819b8854a518c2b42e2a7c4026a0a797db291a
 
         items = arrangement['items']
         item_id_list = []
