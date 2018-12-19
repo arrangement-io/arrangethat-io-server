@@ -46,7 +46,7 @@ class JSONEncoder(json.JSONEncoder):
 @app.route("/",methods=['GET'])
 def home_page():
     access_token = session.get('access_token')
-    if access_token  is None:
+    if access_token is None:
         return redirect(url_for('login'))
 
     access_token = access_token[0]
@@ -86,33 +86,25 @@ def get_access_token():
 
 @app.route('/arrangement', methods=['POST'])
 @app.route('/api/v1/arrangement', methods=['POST'])
-
 def save_arrangement():
-
     arrangement = request.json
     json_data = validate_arrangement(arrangement)
-
     google_id = arrangement.get("user")
-
     sync_users = []
     if 'users' in arrangement:
         for user in arrangement['users']:
             obj_user = {"user": user, "google_id": google_id }
             sync_users.append(obj_user)
-
     arrangement['users'] = sync_users
-
     if json_data:
         arrangement_obj.pass_json(arrangement)
         data = arrangement_obj.build()
-
         arrangement_exists = mdb.check_arrangement_exists(data)
         if arrangement_exists:
             mdb.replace_arrangement(data)
         else:
             mdb.add_arrangement(data)
         return JSONEncoder().encode(data)
-
     else:
         return jsonify({'message':'json is not validate'})
 
@@ -123,9 +115,7 @@ def save_arrangement():
 @app.route('/arrangement/<string:arrangement_id>', methods=['GET'])
 @app.route('/api/v1/arrangement/<string:arrangement_id>', methods=['GET'])
 def get_arrangement(arrangement_id=None):
-
     if arrangement_id is None:
-
         return null
     else:
         return mdb.get_arrangement_by_id(arrangement_id)
@@ -139,8 +129,6 @@ def validate_arrangement(arrangement):
         timestamp = arrangement['timestamp']
         modified_timestamp = arrangement['modified_timestamp']
         is_deleted = arrangement['is_deleted']
-
-
         items = arrangement['items']
         item_id_list = []
         for item in items:
@@ -150,18 +138,15 @@ def validate_arrangement(arrangement):
             item_id_list.append(item_id)
             if item_id == "" or item_name == "" or item_size == "":
                 return False
-
         containers = arrangement['containers']
         container_id_list = []
         for container in containers:
             container_id = container['_id']
             container_name = container['name']
             container_size = container['size']
-
             container_id_list.append(container_id)
             if container_id == "" or container_name == "" or container_size == "":
                 return False
-
         snapshots = arrangement['snapshots']
 
         for snapshot in snapshots:
@@ -192,12 +177,10 @@ def validate_arrangement(arrangement):
                                 return False
                     else:
                         return False
-
         if(arrangement_id and name and timestamp and modified_timestamp and item_id
                 and item_name and item_size and container_id and container_name
                 and container_size and snapshot_id and snapshot_name and container_key_id
                 and item_value_id and not is_deleted):
-
             return True
         else:
             return False
