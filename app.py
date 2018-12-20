@@ -43,10 +43,10 @@ class JSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
 
 
-@app.route("/")
+@app.route("/",methods=['GET'])
 def home_page():
     access_token = session.get('access_token')
-    if access_token is None:
+    if access_token  is None:
         return redirect(url_for('login'))
 
     access_token = access_token[0]
@@ -63,28 +63,34 @@ def home_page():
             session.pop('access_token', None)
             return redirect(url_for('login'))
         return res.read()
-
     return res.read()
 
-@app.route("/login", methods=['POST'])
-def login():
-    data = request.json
-    session['access_token'] = data['access_token'], ''
-    return jsonify({'message':'You are logged in.'})  
-    
-"""
-Comment out the login route 
+
+
+
+
+# return "Arrange That!"
+
+# @app.route("/login", methods=['POST'])
+# def login():
+#     data = request.json
+#     session['access_token'] = data['access_token'], ''
+#     return jsonify({'message':'You are logged in.'})
+
+
+
 @app.route("/login")
 def login():
     callback=url_for('authorized', _external=True)
     return google.authorize(callback=callback)
-"""
 
 @app.route(REDIRECT_URI)
 @google.authorized_handler
 def authorized(resp):
     access_token = resp['access_token']
-    session['access_token'] = access_token, ''
+    session['access_token'] = access_token
+    session.modified = True
+    print(session['access_token'])
     return redirect(url_for('home_page'))
 
 @google.tokengetter
@@ -94,9 +100,23 @@ def get_access_token():
 @app.route('/arrangement', methods=['POST'])
 @app.route('/api/v1/arrangement', methods=['POST'])
 def save_arrangement():
+
     arrangement = request.json
     json_data = validate_arrangement(arrangement)
-    if json_data == True:
+
+    google_id = arrangement.get("user")
+
+    sync_users = []
+
+    if 'users' in arrangement:
+        for user in arrangement['users']:
+            obj_user = {"user": user, "google_id": google_id }
+            sync_users.append(obj_user)
+
+    arrangement['users'] = sync_users
+    arrangement['user'] = google_id
+
+    if json_data:
         arrangement_obj.pass_json(arrangement)
         data = arrangement_obj.build()
 
@@ -106,8 +126,20 @@ def save_arrangement():
         else:
             mdb.add_arrangement(data)
         return JSONEncoder().encode(data)
+
     else:
         return jsonify({'message':'json is not validate'})
+
+
+@app.route('/arrangements/<string:user_id>', methods=['GET'])
+@app.route('/api/v1/arrangements/<string:user_id>', methods=['GET'])
+def get_arrangements(user_id):
+    if user_id is None:
+        return None
+
+    result = mdb.get_all_arrangements_by_user(user_id)
+    return jsonify({"arrangements": result})
+
 
 
 @app.route('/arrangement', methods=['GET'])
@@ -116,18 +148,20 @@ def save_arrangement():
 @app.route('/api/v1/arrangement/<string:arrangement_id>', methods=['GET'])
 def get_arrangement(arrangement_id=None):
     if arrangement_id is None:
-        return JSONEncoder().encode(mdb.get_all_arrangements())
+        return None
     else:
         return mdb.get_arrangement_by_id(arrangement_id)
 
 
 def validate_arrangement(arrangement):
     try:
+
         arrangement_id = arrangement['_id']
         name = arrangement['name']
         timestamp = arrangement['timestamp']
         modified_timestamp = arrangement['modified_timestamp']
         is_deleted = arrangement['is_deleted']
+
 
         items = arrangement['items']
         item_id_list = []

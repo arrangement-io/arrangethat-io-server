@@ -33,6 +33,14 @@ class Mdb:
             print(traceback.format_exc())
         return jsonify({"error: %s": exp})
 
+    def get_all_arrangements_by_user(self, user):
+        try:
+            return list(self.db["arrangement"].find({"user": user}))
+        except Exception as exp:
+            print("get_all_arrangements_by_user() :: Got exception: %s", exp)
+            print(traceback.format_exc())
+        return jsonify({"error: %s": exp})
+
     ###########################################
     #    GET SINGLE DATA BY ARRANGEMENT_ID    #
     ###########################################
