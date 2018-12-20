@@ -65,20 +65,6 @@ def home_page():
         return res.read()
     return res.read()
 
-
-
-
-
-# return "Arrange That!"
-
-# @app.route("/login", methods=['POST'])
-# def login():
-#     data = request.json
-#     session['access_token'] = data['access_token'], ''
-#     return jsonify({'message':'You are logged in.'})
-
-
-
 @app.route("/login")
 def login():
     callback=url_for('authorized', _external=True)
@@ -155,14 +141,11 @@ def get_arrangement(arrangement_id=None):
 
 def validate_arrangement(arrangement):
     try:
-
         arrangement_id = arrangement['_id']
         name = arrangement['name']
         timestamp = arrangement['timestamp']
         modified_timestamp = arrangement['modified_timestamp']
         is_deleted = arrangement['is_deleted']
-
-
         items = arrangement['items']
         item_id_list = []
         for item in items:
