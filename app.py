@@ -89,30 +89,23 @@ def save_arrangement():
 
     arrangement = request.json
     json_data = validate_arrangement(arrangement)
-
     google_id = arrangement.get("user")
-
     sync_users = []
-
     if 'users' in arrangement:
         for user in arrangement['users']:
             obj_user = {"user": user, "google_id": google_id }
             sync_users.append(obj_user)
-
     arrangement['users'] = sync_users
     arrangement['user'] = google_id
-
     if json_data:
         arrangement_obj.pass_json(arrangement)
         data = arrangement_obj.build()
-
         arrangement_exists = mdb.check_arrangement_exists(data)
         if arrangement_exists:
             mdb.replace_arrangement(data)
         else:
             mdb.add_arrangement(data)
         return JSONEncoder().encode(data)
-
     else:
         return jsonify({'message':'json is not validate'})
 
@@ -166,9 +159,7 @@ def validate_arrangement(arrangement):
             container_id_list.append(container_id)
             if container_id == "" or container_name == "" or container_size == "":
                 return False
-
         snapshots = arrangement['snapshots']
-
         for snapshot in snapshots:
             snapshot_id = snapshot['_id']
             snapshot_name = snapshot['name']
@@ -197,16 +188,13 @@ def validate_arrangement(arrangement):
                                 return False
                     else:
                         return False
-
         if(arrangement_id and name and timestamp and modified_timestamp and item_id
                 and item_name and item_size and container_id and container_name
                 and container_size and snapshot_id and snapshot_name and container_key_id
                 and item_value_id and not is_deleted):
-
             return True
         else:
             return False
-
     except Exception as exe:
         print("validate_arrangement() :: Got exception: %s: ", exe)
         print(traceback.format_exc())
