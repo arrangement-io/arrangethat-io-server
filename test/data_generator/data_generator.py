@@ -8,6 +8,8 @@
 #  containers: [_container_objects_],
 #  is_deleted: _,
 #  timestamp: _,
+# modified_timestamp: _,
+# timestamp: _,
 #  snapshots: [_snapshot_objects_]
 # }
 #
@@ -52,6 +54,7 @@ class Arrangement:
     data = {}
 
     def pass_json(self, arrangement):
+        self.data['user'] = arrangement['user']
         self.data["name"] = arrangement['name']
         self.data["_id"] = arrangement['_id']
         self.data["owner"] = arrangement['owner']
