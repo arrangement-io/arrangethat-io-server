@@ -1,6 +1,6 @@
 # arrangethat-io-server
 
-Contributers&ensp;·&ensp;[Jeff Chiu](https://jeffchiucp.github.io/portfolio/)
+Contributers&ensp;·&ensp;[Jeff Chiu](https://jeffchiucp.github.io/portfolio/), &ensp;[Gideon Chia](https://www.linkedin.com/in/gideon-chia-8573bb30/)
 
 > Arrangement-io-server is a light weight API implemented using python, MongoDB, Google API, 
 
