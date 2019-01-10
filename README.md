@@ -20,7 +20,7 @@ $ python app.py
 
 
 ## Usage
-Avaliable online at shorturl.at/pzDS2
+Avaliable online at https://bit.ly/2AE6Bte
 
 
 
