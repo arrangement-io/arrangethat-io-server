@@ -64,8 +64,6 @@ def home_page():
 
     return res.read()
 
-    # return "Arrange That!"
-
 def get_current_user():
     access_token = session.get('access_token')
     if access_token is None:
@@ -136,48 +134,10 @@ def save_arrangement():
 @app.route('/arrangements/<string:user_id>', methods=['GET'])
 @app.route('/api/v1/arrangements/<string:user_id>', methods=['GET'])
 def get_arrangements(user_id):
-    get_all_data = mdb.get_all_arrangements()
-    for all_data_users in get_all_data:
-        try:
-            user_ids_all = all_data_users['users']
-            result = mdb.get_all_arrangements_by_user(user_ids_all)
-            return jsonify({"arrangements": result})
-
-            # access_token = session.get('access_token')
-            # if access_token is None:
-            #     return redirect(url_for('login'))
-            #
-            # access_token = access_token[0]
-            # from urllib2 import Request, urlopen, URLError
-            #
-            # headers = {'Authorization': 'OAuth ' + access_token}
-            # req = Request('https://www.googleapis.com/oauth2/v1/userinfo',
-            #               None, headers)
-            # try:
-            #     res = urlopen(req)
-            # except URLError, e:
-            #     print (e)
-            #     if e.code == 401:
-            #         # Unauthorized - bad token
-            #         session.pop('access_token', None)
-            #         return redirect(url_for('login'))
-            #     print ('^^^^^^^^^^^^^^^^^^^',res.read())
-            #     return res.read()
-            #
-            # return res.read()
-
-
-
-        except Exception as e:
-            print(e)
-
-
-
-    # if user_id is None:
-    #     return None
-    # result = mdb.get_all_arrangements_by_user(user_id)
-    # return jsonify({"arrangements": result})
-
+    if user_id is None:
+        return None
+    result = mdb.get_all_arrangements_by_user(user_id)
+    return jsonify({"arrangements": result})
 
 
 @app.route('/arrangement', methods=['GET'])
