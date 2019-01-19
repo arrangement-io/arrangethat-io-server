@@ -1,12 +1,10 @@
 from flask import Flask, jsonify, request, session, redirect, url_for
 from flask_cors import CORS
 from flask_oauth import OAuth
-
 from bson import ObjectId
 import json
 import os
 import traceback
-
 from config import ITEM, CONTAINER, ARRANGEMENT, SNAPSHOT, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, REDIRECT_URI
 from test_mongo_data import Mdb
 from test.data_generator.data_generator import Arrangement
@@ -43,7 +41,7 @@ class JSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
 
 
-@app.route("/",methods=['GET'])
+@app.route("/")
 def home_page():
     access_token = session.get('access_token')
     if access_token is None:
@@ -63,21 +61,53 @@ def home_page():
             session.pop('access_token', None)
             return redirect(url_for('login'))
         return res.read()
+
     return res.read()
 
+    # return "Arrange That!"
 
-@app.route("/login")
+def get_current_user():
+    access_token = session.get('access_token')
+    if access_token is None:
+        return redirect(url_for('login'))
+
+    access_token = access_token[0]
+    from urllib2 import Request, urlopen, URLError
+
+    headers = {'Authorization': 'OAuth ' + access_token}
+    req = Request('https://www.googleapis.com/oauth2/v1/userinfo',
+                  None, headers)
+    try:
+        res = urlopen(req)
+    except URLError, e:
+        if e.code == 401:
+            # Unauthorized - bad token
+            session.pop('access_token', None)
+            return redirect(url_for('login'))
+        return res.read()
+
+    google_res = res.read()
+    if google_res:
+        return google_res['id']
+
+    return None
+
+@app.route("/login", methods=['POST'])
 def login():
-    callback=url_for('authorized', _external=True)
-    return google.authorize(callback=callback)
+    data = request.json
+    session['access_token'] = data['access_token'], ''
+    return jsonify({'message':'You are logged in.'})
+
+# @app.route("/login")
+# def login():
+#     callback=url_for('authorized', _external=True)
+#     return google.authorize(callback=callback)
 
 @app.route(REDIRECT_URI)
 @google.authorized_handler
 def authorized(resp):
     access_token = resp['access_token']
-    session['access_token'] = access_token
-    session.modified = True
-    print(session['access_token'])
+    session['access_token'] = access_token, ''
     return redirect(url_for('home_page'))
 
 @google.tokengetter
@@ -89,13 +119,7 @@ def get_access_token():
 def save_arrangement():
     arrangement = request.json
     json_data = validate_arrangement(arrangement)
-    google_id = arrangement.get("user")
-    sync_users = []
-    if 'users' in arrangement:
-        for user in arrangement['users']:
-            obj_user = {"user": user, "google_id": google_id }
-            sync_users.append(obj_user)
-    arrangement['users'] = sync_users
+
     if json_data:
         arrangement_obj.pass_json(arrangement)
         data = arrangement_obj.build()
@@ -109,21 +133,33 @@ def save_arrangement():
         return jsonify({'message':'json is not validate'})
 
 
+@app.route('/arrangements/<string:user_id>', methods=['GET'])
+@app.route('/api/v1/arrangements/<string:user_id>', methods=['GET'])
+def get_arrangements(user_id):
+    if user_id is None:
+        return None
+    result = mdb.get_all_arrangements_by_user(user_id)
+    return jsonify({"arrangements": result})
+
 
 @app.route('/arrangement', methods=['GET'])
 @app.route('/api/v1/arrangement', methods=['GET'])
 @app.route('/arrangement/<string:arrangement_id>', methods=['GET'])
 @app.route('/api/v1/arrangement/<string:arrangement_id>', methods=['GET'])
 def get_arrangement(arrangement_id=None):
+    current_user = get_current_user()
     if arrangement_id is None:
-        return null
+        arrangements = mdb.get_all_arrangements_by_user(current_user)
+        arrangement_list = []
+        for arr in arrangements:
+            arrangement_list.append({"id": arr['_id'], "title": arr['name']})
+
+        return JSONEncoder().encode(arrangement_list)
     else:
         return mdb.get_arrangement_by_id(arrangement_id)
 
-
 def validate_arrangement(arrangement):
     try:
-
         arrangement_id = arrangement['_id']
         name = arrangement['name']
         timestamp = arrangement['timestamp']
@@ -148,7 +184,6 @@ def validate_arrangement(arrangement):
             if container_id == "" or container_name == "" or container_size == "":
                 return False
         snapshots = arrangement['snapshots']
-
         for snapshot in snapshots:
             snapshot_id = snapshot['_id']
             snapshot_name = snapshot['name']
@@ -165,7 +200,6 @@ def validate_arrangement(arrangement):
                             print(data)
                         else:
                             return False
-
                 for key, value in snapshot_dict.items():
                     container_key_id = key
                     if container_key_id in container_id_list:
@@ -177,6 +211,7 @@ def validate_arrangement(arrangement):
                                 return False
                     else:
                         return False
+
         if(arrangement_id and name and timestamp and modified_timestamp and item_id
                 and item_name and item_size and container_id and container_name
                 and container_size and snapshot_id and snapshot_name and container_key_id
@@ -184,12 +219,10 @@ def validate_arrangement(arrangement):
             return True
         else:
             return False
-
     except Exception as exe:
         print("validate_arrangement() :: Got exception: %s: ", exe)
         print(traceback.format_exc())
         return False
-
 
 if __name__ == '__main__':
     app.run(host = 'localhost', port = 8080, debug = True)
