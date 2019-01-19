@@ -64,8 +64,6 @@ def home_page():
 
     return res.read()
 
-    # return "Arrange That!"
-
 def get_current_user():
     access_token = session.get('access_token')
     if access_token is None:
