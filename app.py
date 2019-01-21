@@ -16,8 +16,8 @@ app = Flask(__name__)
 oauth = OAuth()
 CORS(app)
 mdb = Mdb()
+export = Export()
 arrangement_obj = Arrangement()
-
 app.debug = DEBUG
 app.secret_key = SECRET_KEY
 
@@ -142,10 +142,11 @@ def get_arrangements(user_id):
 
 @app.route('/arrangement', methods=['GET'])
 @app.route('/api/v1/arrangement', methods=['GET'])
-@app.route('/arrangement/<string:arrangement_id>', methods=['GET'])
+@app.route('/arrangement/<string:arrangement_id>/<string:export_type>', methods=['GET'])
 @app.route('/api/v1/arrangement/<string:arrangement_id>', methods=['GET'])
-def get_arrangement(arrangement_id=None):
+def get_arrangement(arrangement_id=None, export_type=None):
     current_user = get_current_user()
+
     if arrangement_id is None:
         arrangements = mdb.get_all_arrangements_by_user(current_user)
         arrangement_list = []
@@ -154,7 +155,9 @@ def get_arrangement(arrangement_id=None):
 
         return JSONEncoder().encode(arrangement_list)
     else:
-        return mdb.get_arrangement_by_id(arrangement_id)
+        arrangements = mdb.get_arrangement_by_id(arrangement_id)
+        return export.get_arrangements(export_type, arrangements)
+
 
 def validate_arrangement(arrangement):
     try:
