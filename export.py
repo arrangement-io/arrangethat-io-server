@@ -3,31 +3,28 @@ import csv
 from flask import make_response, jsonify
 
 
-def to_csv(arrangements):
-    si = StringIO.StringIO()
-    cw = csv.writer(si)
-
-    cw.writerow(arrangements.keys())
-    cw.writerow(arrangements.values())
-    output = make_response(si.getvalue())
-    output.headers["Content-Disposition"] = "attachment; filename=arrangements.csv"
-    output.headers["Content-type"] = "text/csv"
-    return output
-
-
-def to_tsv(arrangements):
-    si = StringIO.StringIO()
-    cw = csv.writer(si, delimiter='\t')
-
-    cw.writerow(arrangements.keys())
-    cw.writerow(arrangements.values())
-    output = make_response(si.getvalue())
-    output.headers["Content-Disposition"] = "attachment; filename=arrangements.tsv"
-    output.headers["Content-type"] = "text/csv"
-    return output
-
-
 class Export:
+
+    def to_csv(self, arrangements):
+        si = StringIO.StringIO()
+        cw = csv.writer(si)
+        cw.writerow(arrangements.keys())
+        cw.writerow(arrangements.values())
+        output = make_response(si.getvalue())
+        output.headers["Content-Disposition"] = "attachment; filename=arrangements.csv"
+        output.headers["Content-type"] = "text/csv"
+        return output
+
+    def to_tsv(self, arrangements):
+        si = StringIO.StringIO()
+        cw = csv.writer(si, delimiter='\t')
+
+        cw.writerow(arrangements.keys())
+        cw.writerow(arrangements.values())
+        output = make_response(si.getvalue())
+        output.headers["Content-Disposition"] = "attachment; filename=arrangements.tsv"
+        output.headers["Content-type"] = "text/csv"
+        return output
 
     def get_arrangements(self, export_type, arrangements):
 
