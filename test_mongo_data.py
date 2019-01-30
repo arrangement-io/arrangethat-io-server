@@ -33,9 +33,11 @@ class Mdb:
             print(traceback.format_exc())
         return jsonify({"error: %s": exp})
 
+
+
     def get_all_arrangements_by_user(self, user):
         try:
-            return list(self.db["arrangement"].find({"user": user}))
+            return list(self.db["arrangement"].find({"owner": user}))
         except Exception as exp:
             print("get_all_arrangements_by_user() :: Got exception: %s", exp)
             print(traceback.format_exc())
@@ -50,10 +52,8 @@ class Mdb:
             response = []
             for arrangement in result:
                 response.append(arrangement)
-            if len(response) == 1:
-                return jsonify({"arrangement": response[0]})
-            else:
-                return jsonify({"arrangement": "no arrangement found"})
+
+            return response
         except Exception as exp:
             print("get_arrangement_by_id():: Got exception: %s", exp)
             print(traceback.format_exc())
@@ -64,7 +64,7 @@ class Mdb:
     ###########################################
     def check_arrangement_exists(self, arrangement):
         return self.db["arrangement"].find({"_id": arrangement["_id"]}).count() > 0
-    
+
 
 if __name__ == "__main__":
     mdb = Mdb()
