@@ -7,6 +7,7 @@ import os
 import traceback
 from config import ITEM, CONTAINER, ARRANGEMENT, SNAPSHOT, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, REDIRECT_URI
 from test_mongo_data import Mdb
+from export import Export
 from test.data_generator.data_generator import Arrangement
 
 SECRET_KEY = 'development key'
