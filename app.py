@@ -7,6 +7,7 @@ import os
 import traceback
 from config import ITEM, CONTAINER, ARRANGEMENT, SNAPSHOT, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, REDIRECT_URI
 from test_mongo_data import Mdb
+from export import Export
 from test.data_generator.data_generator import Arrangement
 
 SECRET_KEY = 'development key'
@@ -16,7 +17,6 @@ app = Flask(__name__)
 oauth = OAuth()
 CORS(app)
 mdb = Mdb()
-export = Export()
 arrangement_obj = Arrangement()
 app.debug = DEBUG
 app.secret_key = SECRET_KEY
@@ -141,10 +141,12 @@ def get_arrangements(user_id):
 
 
 @app.route('/arrangement', methods=['GET'])
-@app.route('/api/v1/arrangement', methods=['GET'])
+@app.route('/arrangement/<string:arrangement_id>', methods=['GET'])
 @app.route('/arrangement/<string:arrangement_id>/<string:export_type>', methods=['GET'])
+@app.route('/api/v1/arrangement', methods=['GET'])
 @app.route('/api/v1/arrangement/<string:arrangement_id>', methods=['GET'])
-def get_arrangement(arrangement_id=None, export_type=None):
+@app.route('/api/v1/arrangement/<string:arrangement_id>/<string:export_type>', methods=['GET'])
+def get_arrangement(arrangement_id=None, export_type='json'):
     current_user = get_current_user()
 
     if arrangement_id is None:
@@ -156,7 +158,7 @@ def get_arrangement(arrangement_id=None, export_type=None):
         return JSONEncoder().encode(arrangement_list)
     else:
         arrangements = mdb.get_arrangement_by_id(arrangement_id)
-        return export.get_arrangements(export_type, arrangements)
+        return Export.get_arrangements(export_type, arrangements)
 
 
 def validate_arrangement(arrangement):
