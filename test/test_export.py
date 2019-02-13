@@ -3,7 +3,7 @@ from export import Export
 import json
 
 def mock_arrangement():
-    with open("arrangement.json") as f:
+    with open("test/arrangement.json") as f:
         return json.loads(f.read())
 
 def test_export_csv():
