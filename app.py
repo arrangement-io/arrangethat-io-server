@@ -1,14 +1,17 @@
-from flask import Flask, jsonify, request, session, redirect, url_for
-from flask_cors import CORS
-from flask_oauth import OAuth
-from bson import ObjectId
 import json
 import os
 import traceback
-from config import ITEM, CONTAINER, ARRANGEMENT, SNAPSHOT, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, REDIRECT_URI
-from test_mongo_data import Mdb
-from export import Export
 from test.data_generator.data_generator import Arrangement
+
+from bson import ObjectId
+from config import (ARRANGEMENT, CONTAINER, GOOGLE_CLIENT_ID,
+                    GOOGLE_CLIENT_SECRET, ITEM, REDIRECT_URI, SNAPSHOT)
+from export import Export
+from flask import Flask, jsonify, redirect, request, session, url_for
+from flask_cors import CORS
+from flask_oauth import OAuth
+from test_mongo_data import Mdb
+from validate import Validate
 
 SECRET_KEY = 'development key'
 DEBUG = True
@@ -116,9 +119,8 @@ def get_access_token():
 @app.route('/api/v1/arrangement', methods=['POST'])
 def save_arrangement():
     arrangement = request.json
-    json_data = validate_arrangement(arrangement)
 
-    if json_data:
+    if Validate.validate_arrangment(arrangement):
         arrangement_obj.pass_json(arrangement)
         data = arrangement_obj.build()
         arrangement_exists = mdb.check_arrangement_exists(data)
