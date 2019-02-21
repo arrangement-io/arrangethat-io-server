@@ -1,8 +1,12 @@
 from __future__ import print_function
-import StringIO
+
 import csv
+import StringIO
+
 import six
-from flask import make_response, jsonify
+
+from flask import jsonify, make_response
+
 
 class Export:
     """Given an arrangement, render the arrangement in a spreadsheet matrix."""
@@ -72,4 +76,3 @@ class Export:
                 return jsonify({"error": "Please provide a valid export type"})
         else:
             return jsonify({"arrangement": "no arrangement found"})
-

@@ -61,6 +61,12 @@ db.sqlite3
 instance/
 .webassets-cache
 
+# SWP files
+*.swp
+
+# VS Code
+.vscode/
+
 # Scrapy stuff:
 .scrapy
 
