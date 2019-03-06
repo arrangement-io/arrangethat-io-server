@@ -46,8 +46,8 @@ def create_item(item_id, name, size):
     return {"_id": item_id, "name": name, "size": size}
 
 
-def create_snapshot(snapshot_id, name, snapshot_unassigned):
-    return {"_id": snapshot_id, "name": name, "snapshot": {}, "unassigned": snapshot_unassigned}
+def create_snapshot(snapshot_id, name, snapshot, snapshot_unassigned):
+    return {"_id": snapshot_id, "name": name, "snapshot": snapshot, "unassigned": snapshot_unassigned}
 
 
 class Arrangement:
@@ -61,6 +61,7 @@ class Arrangement:
         self.data["users"] = arrangement['users']
         self.data["items"] = []
         self.data["containers"] = []
+        self.data["snapshots"] = []
         self.data["is_deleted"] = arrangement['is_deleted']
         self.data["timestamp"] = arrangement['timestamp']
         self.data["modified_timestamp"] = arrangement['modified_timestamp']
@@ -80,13 +81,9 @@ class Arrangement:
         for snapshot in snapshots_data:
             snapshot_id = snapshot['_id']
             snapshot_name = snapshot['name']
-            snapshot_snapshots = snapshot['snapshot']
+            snapshot_snapshot = snapshot['snapshot']
             snapshot_unassigned = snapshot['unassigned']
-            self.data["snapshots"] = [create_snapshot(snapshot_id, snapshot_name, snapshot_unassigned)]
-            data1 = {}
-            for key, value in snapshot_snapshots.items():
-                data1[key] = value
-                self.data['snapshots'][0]['snapshot'][key] = value
+            self.data["snapshots"].append(create_snapshot(snapshot_id, snapshot_name, snapshot_snapshot, snapshot_unassigned))
 
     def add_item(self, item_id, name, size):
         item = create_item(item_id, name, size)
