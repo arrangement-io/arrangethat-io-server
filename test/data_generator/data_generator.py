@@ -46,8 +46,8 @@ def create_item(item_id, name, size):
     return {"_id": item_id, "name": name, "size": size}
 
 
-def create_snapshot(snapshot_id, name, snapshot, snapshot_unassigned):
-    return {"_id": snapshot_id, "name": name, "snapshot": snapshot, "unassigned": snapshot_unassigned}
+def create_snapshot(snapshot_id, name, snapshot, snapshot_unassigned, snapshot_containers):
+    return {"_id": snapshot_id, "name": name, "snapshot": snapshot, "unassigned": snapshot_unassigned, "snapshotContainers": snapshot_containers}
 
 
 class Arrangement:
@@ -83,7 +83,8 @@ class Arrangement:
             snapshot_name = snapshot['name']
             snapshot_snapshot = snapshot['snapshot']
             snapshot_unassigned = snapshot['unassigned']
-            self.data["snapshots"].append(create_snapshot(snapshot_id, snapshot_name, snapshot_snapshot, snapshot_unassigned))
+            snapshot_containers = snapshot.get("snapshotContainers", [])
+            self.data["snapshots"].append(create_snapshot(snapshot_id, snapshot_name, snapshot_snapshot, snapshot_unassigned, snapshot_containers))
 
     def add_item(self, item_id, name, size):
         item = create_item(item_id, name, size)
