@@ -99,11 +99,6 @@ def login():
     session['access_token'] = data['access_token'], ''
     return jsonify({'message':'You are logged in.'})
 
-# @app.route("/login")
-# def login():
-#     callback=url_for('authorized', _external=True)
-#     return google.authorize(callback=callback)
-
 @app.route(REDIRECT_URI)
 @google.authorized_handler
 def authorized(resp):
@@ -160,7 +155,11 @@ def get_arrangement(arrangement_id=None, export_type='json'):
         return JSONEncoder().encode(arrangement_list)
     else:
         arrangements = mdb.get_arrangement_by_id(arrangement_id)
-        return Export.get_arrangements(export_type, arrangements)
+        if len(arrangements) == 1:
+            return Export.export_arrangement(export_type, arrangements[0])
+        else:
+            return jsonify({"arrangement": "no arrangement found"})
+
 
 if __name__ == '__main__':
     app.run(host = 'localhost', port = 8080, debug = True)

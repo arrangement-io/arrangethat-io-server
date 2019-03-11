@@ -1,75 +1,95 @@
 {
-"user": "115514976324563592661",
-"_id": "testtest12",
-"containers": [
-{
-"_id": "cB3GGD1Y7",
-"name": "nathan car",
-"size": 8
-},
-{
-"_id": "c6440J009",
-"name": "gideon car",
-"size": 9
-}
-],
-"is_deleted": false,
-"items": [
-{
-"_id": "iIGUFNXE3",
-"name": "gideon",
-"size": 1
-},
-{
-"_id": "iOSOI9CIS",
-"name": "gideon luggage",
-"size": 1
-},
-{
-"_id": "iS9VCNY3P",
-"name": "jeff",
-"size": 1
-},
-{
-"_id": "i0SIZA58U",
-"name": "nathan",
-"size": 1
-},
-{
-"_id": "i4JVG98T0",
-"name": "moses",
-"size": 1
-},
-{
-"_id": "i1KVG98T0",
-"name": "jon",
-"size": 1
-}
-],
-
-"name": "first arrangement",
-"users": ["104816395207962890919"],
-
-"owner": "104816395207962890919",
-"snapshots": [{
-"_id": "s2OOMJ0HF",
-"name": "only snapshot",
-"snapshot": {
-"c6440J009": [
-"i0SIZA58U",
-"iOSOI9CIS",
-"i4JVG98T0"
-],
-"cB3GGD1Y7": [
-"iIGUFNXE3",
-"iS9VCNY3P"
-]
-},
-"unassigned": [
-"i1KVG98T0"
-]
-}],
-
-"timestamp": "1538842014.061443",
-"modified_timestamp": "177742014.00000"
+        "_id": "a4N0JQXMR",
+        "containers": [
+            {
+                "_id": "cVUX4WWQQ",
+                "name": "Chia Van",
+                "size": 8
+            },
+            {
+                "_id": "cXVXP37AZ",
+                "name": "Jeff Van",
+                "size": 8
+            }
+        ],
+        "is_deleted": false,
+        "items": [
+            {
+                "_id": "iTKYOWPF5",
+                "name": "Gideon",
+                "size": 1
+            },
+            {
+                "_id": "iBB4J7SDA",
+                "name": "Crystal",
+                "size": 1
+            },
+            {
+                "_id": "i8RQDZKJF",
+                "name": "Jeff",
+                "size": 1
+            },
+            {
+                "_id": "iR7XGXCGU",
+                "name": "Gabe",
+                "size": 1
+            }
+        ],
+        "modified_timestamp": 1552335368.063,
+        "name": "test1",
+        "owner": "116550101409368732312",
+        "snapshots": [
+            {
+                "_id": "s01LIZCEL",
+                "name": "Version 1",
+                "snapshot": {},
+                "snapshotContainers": [
+                    {
+                        "_id": "cVUX4WWQQ",
+                        "items": [
+                            "iTKYOWPF5",
+                            "iBB4J7SDA"
+                        ]
+                    },
+                    {
+                        "_id": "cXVXP37AZ",
+                        "items": [
+                            "i8RQDZKJF",
+                            "iR7XGXCGU"
+                        ]
+                    }
+                ],
+                "unassigned": []
+            },
+            {
+                "_id": "s63A32VNN",
+                "name": "Version 2",
+                "snapshot": {
+                    "cVUX4WWQQ": [],
+                    "cXVXP37AZ": []
+                },
+                "snapshotContainers": [
+                    {
+                        "_id": "cVUX4WWQQ",
+                        "items": [
+                            "iTKYOWPF5",
+                            "iBB4J7SDA"
+                        ]
+                    },
+                    {
+                        "_id": "cXVXP37AZ",
+                        "items": []
+                    }
+                ],
+                "unassigned": [
+                    "i8RQDZKJF",
+                    "iR7XGXCGU"
+                ]
+            }
+        ],
+        "timestamp": 1552335324.455,
+        "user": "116550101409368732312",
+        "users": [
+            "116550101409368732312"
+        ]
 }
