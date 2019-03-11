@@ -14,8 +14,11 @@ class Export:
     def render_arrangement(arrangement):
         render = []
         for snapshot in arrangement["snapshots"]:
-            render.extend(Export.render_snapshot(snapshot, arrangement["containers"], arrangement["items"]))
-        return map(list, six.moves.zip_longest(*render, fillvalue=""))
+            snapshot_render = Export.render_snapshot(snapshot, arrangement["containers"], arrangement["items"])
+            # Transpose the render
+            render.extend(map(list, six.moves.zip_longest(*snapshot_render, fillvalue="")))
+
+        return render
 
     """Given a snapshot and list of containers and items, render a single snapshot in a spreadsheet matrix."""
     @staticmethod
@@ -24,11 +27,16 @@ class Export:
         output = []
         sider = [snapshot["name"], "car", "driver", "passenger"]
         output.append(sider)
-        for container in snapshot["snapshot"]:
-            container_and_items = ["", Export.retrieve_name(container, containers)]
-            for item in snapshot["snapshot"][container]:
+        for container in snapshot["snapshotContainers"]:
+            container_and_items = ["", Export.retrieve_name(container["_id"], containers)]
+            for item in container["items"]:
                 container_and_items.append(Export.retrieve_name(item, items))
             output.append(container_and_items)
+        unassigned_items = ["", "unassigned"]
+        for item in snapshot["unassigned"]:
+            unassigned_items.append(Export.retrieve_name(item, items))
+        output.append(unassigned_items)
+
         return output
 
     """Helper method to retrieve the name of an object, given the id."""
@@ -49,9 +57,6 @@ class Export:
             cw.writerow(line)
         return si.getvalue()
 
-        for line in matrix:
-            print(*line, sep='\t')
-
     """Outputs the arrangement as a tsv in a spreadsheet matrix."""
     @staticmethod
     def to_tsv(arrangement):
@@ -64,15 +69,12 @@ class Export:
         return si.getvalue()
 
     @staticmethod
-    def get_arrangements(export_type, arrangements):
-        if len(arrangements) == 1:
-            if export_type == "csv":
-                return Export.to_csv(arrangements[0])
-            elif export_type == "tsv":
-                return Export.to_tsv(arrangements[0])
-            elif export_type == "json":
-                return jsonify({"arrangement": arrangements[0]})
-            else:
-                return jsonify({"error": "Please provide a valid export type"})
+    def export_arrangement(export_type, arrangement):
+        if export_type == "csv":
+            return Export.to_csv(arrangement)
+        elif export_type == "tsv":
+            return Export.to_tsv(arrangement)
+        elif export_type == "json":
+            return jsonify({"arrangement": arrangement})
         else:
-            return jsonify({"arrangement": "no arrangement found"})
+            return jsonify({"error": "Please provide a valid export type"})
