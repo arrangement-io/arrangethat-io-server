@@ -1,11 +1,11 @@
 from flask import jsonify
 from pymongo import MongoClient
 import traceback
-from config import *
+from config import DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
 
 class UsersMDB(object):
     def __init__(self):
-        conn_str = "mongodb://%s:%s@%s:%d/%s" % (DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME)
+        conn_str = "mongodb://%s:%s@%s:%s/%s" % (DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME)
         client = MongoClient(conn_str)
         self.db = client[DB_NAME]
         self.collection = self.db['users']
