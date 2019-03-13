@@ -4,8 +4,8 @@ import traceback
 from test.data_generator.data_generator import Arrangement
 
 from bson import ObjectId
-from config import (ARRANGEMENT, CONTAINER, GOOGLE_CLIENT_ID,
-                    GOOGLE_CLIENT_SECRET, ITEM, REDIRECT_URI, SNAPSHOT)
+from config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, REDIRECT_URI
+from constants import ARRANGEMENT, CONTAINER, ITEM, SNAPSHOT
 from export import Export
 from flask import Flask, jsonify, redirect, request, session, url_for
 from flask_cors import CORS
@@ -154,7 +154,7 @@ def get_arrangement(arrangement_id=None, export_type='json'):
 @app.route('/api/v1/users', methods=['GET'])
 def get_all_users():
     return dumps({"users": usersMDB.get_all_users()})
-    
+
 
 if __name__ == '__main__':
     app.run(host = 'localhost', port = 8080, debug = True)
