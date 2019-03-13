@@ -10,8 +10,12 @@ from export import Export
 from flask import Flask, jsonify, redirect, request, session, url_for
 from flask_cors import CORS
 from flask_oauth import OAuth
-from test_mongo_data import Mdb
+from mongodriver.arrangements_mdb import ArrangementsMDB
+from mongodriver.users_mdb import UsersMDB
 from validate import Validate
+from urllib2 import Request, urlopen, URLError
+from bson.json_util import dumps
+import httplib
 
 SECRET_KEY = 'development key'
 DEBUG = True
@@ -19,7 +23,8 @@ DEBUG = True
 app = Flask(__name__)
 oauth = OAuth()
 CORS(app)
-mdb = Mdb()
+arrangementsMDB = ArrangementsMDB()
+usersMDB = UsersMDB()
 arrangement_obj = Arrangement()
 app.debug = DEBUG
 app.secret_key = SECRET_KEY
@@ -37,13 +42,6 @@ google = oauth.remote_app('google',
                           consumer_secret=GOOGLE_CLIENT_SECRET)
 
 
-class JSONEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, ObjectId):
-            return str(o)
-        return json.JSONEncoder.default(self, o)
-
-
 @app.route("/")
 def home_page():
     access_token = session.get('access_token')
@@ -51,15 +49,14 @@ def home_page():
         return redirect(url_for('login'))
 
     access_token = access_token[0]
-    from urllib2 import Request, urlopen, URLError
 
     headers = {'Authorization': 'OAuth '+access_token}
     req = Request('https://www.googleapis.com/oauth2/v1/userinfo',
                   None, headers)
     try:
         res = urlopen(req)
-    except URLError, e:
-        if e.code == 401:
+    except URLError as e:
+        if e.errno == 401:
             # Unauthorized - bad token
             session.pop('access_token', None)
             return redirect(url_for('login'))
@@ -73,15 +70,14 @@ def get_current_user():
         return redirect(url_for('login'))
 
     access_token = access_token[0]
-    from urllib2 import Request, urlopen, URLError
 
     headers = {'Authorization': 'OAuth ' + access_token}
     req = Request('https://www.googleapis.com/oauth2/v1/userinfo',
                   None, headers)
     try:
         res = urlopen(req)
-    except URLError, e:
-        if e.code == 401:
+    except URLError as e:
+        if e.errno == 401:
             # Unauthorized - bad token
             session.pop('access_token', None)
             return redirect(url_for('login'))
@@ -97,6 +93,7 @@ def get_current_user():
 def login():
     data = request.json
     session['access_token'] = data['access_token'], ''
+    usersMDB.add_user(data['user_data'])
     return jsonify({'message':'You are logged in.'})
 
 @app.route(REDIRECT_URI)
@@ -118,12 +115,12 @@ def save_arrangement():
     if Validate.validate_arrangment(arrangement):
         arrangement_obj.pass_json(arrangement)
         data = arrangement_obj.build()
-        arrangement_exists = mdb.check_arrangement_exists(data)
+        arrangement_exists = arrangementsMDB.check_arrangement_exists(data)
         if arrangement_exists:
-            mdb.replace_arrangement(data)
+            arrangementsMDB.replace_arrangement(data)
         else:
-            mdb.add_arrangement(data)
-        return JSONEncoder().encode(data)
+            arrangementsMDB.add_arrangement(data)
+        return dumps(data)
     else:
         return jsonify({'message':'json is not validate'})
 
@@ -133,7 +130,7 @@ def save_arrangement():
 def get_arrangements(user_id):
     if user_id is None:
         return None
-    result = mdb.get_all_arrangements_by_user(user_id)
+    result = arrangementsMDB.get_all_arrangements_by_user(user_id)
     return jsonify({"arrangements": result})
 
 
@@ -144,22 +141,20 @@ def get_arrangements(user_id):
 @app.route('/api/v1/arrangement/<string:arrangement_id>', methods=['GET'])
 @app.route('/api/v1/arrangement/<string:arrangement_id>/<string:export_type>', methods=['GET'])
 def get_arrangement(arrangement_id=None, export_type='json'):
-    current_user = get_current_user()
-
     if arrangement_id is None:
-        arrangements = mdb.get_all_arrangements_by_user(current_user)
-        arrangement_list = []
-        for arr in arrangements:
-            arrangement_list.append({"id": arr['_id'], "title": arr['name']})
-
-        return JSONEncoder().encode(arrangement_list)
+        return ('', httplib.NO_CONTENT)
     else:
-        arrangements = mdb.get_arrangement_by_id(arrangement_id)
+        arrangements = arrangementsMDB.get_arrangement_by_id(arrangement_id)
         if len(arrangements) == 1:
             return Export.export_arrangement(export_type, arrangements[0])
         else:
             return jsonify({"arrangement": "no arrangement found"})
 
+@app.route('/users', methods=['GET'])
+@app.route('/api/v1/users', methods=['GET'])
+def get_all_users():
+    return dumps({"users": usersMDB.get_all_users()})
+    
 
 if __name__ == '__main__':
     app.run(host = 'localhost', port = 8080, debug = True)
