@@ -2,6 +2,11 @@
 
 Contributers&ensp;·&ensp;[Jeff Chiu](https://jeffchiucp.github.io/portfolio/), &ensp;[Gideon Chia](https://www.linkedin.com/in/gideon-chia-8573bb30/)
 
+### Authors
+
+- [Jeff Chiu](https://www.linkedin.com/in/jeffchiu1) - Full Stack
+- [Gideon Chia](https://www.linkedin.com/in/gideon-chia-8573bb30/) - Full Stack
+
 > Arrangement-io-server is a light weight API implemented using python, MongoDB, Google API, 
 
 
