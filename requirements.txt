@@ -8,6 +8,6 @@ MarkupSafe==1.0
 pymongo==3.7.1
 python-dotenv==0.10.1
 six==1.11.0
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 Flask-RESTful==0.2.12
 gunicorn==19.5.0
