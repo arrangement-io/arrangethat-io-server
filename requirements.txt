@@ -10,4 +10,4 @@ python-dotenv==0.10.1
 six==1.11.0
 Werkzeug==0.15.5
 Flask-RESTful==0.2.12
-gunicorn==19.5.0
+gunicorn==22.0.0
