@@ -11,3 +11,4 @@ six==1.11.0
 Werkzeug==3.0.3
 Flask-RESTful==0.2.12
 gunicorn==22.0.0
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
