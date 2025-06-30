@@ -1,3 +1,21 @@
+import urllib.parse
+import sys
+sys.modules['urlparse'] = urllib.parse
+import urllib # Import urllib
+urllib.quote = urllib.parse.quote
+urllib.unquote = urllib.parse.unquote
+urllib.urlencode = urllib.parse.urlencode # Add this line
+
+# Add aliases for Werkzeug functions
+import werkzeug
+import werkzeug.http # Import the http module
+import werkzeug.datastructures # Import the datastructures module
+werkzeug.url_decode = urllib.parse.parse_qs
+werkzeug.url_encode = urllib.parse.urlencode
+werkzeug.url_quote = urllib.parse.quote
+werkzeug.parse_options_header = werkzeug.http.parse_options_header
+werkzeug.Headers = werkzeug.datastructures.Headers
+
 import json
 import os
 import traceback
@@ -13,9 +31,10 @@ from flask_oauth import OAuth
 from mongodriver.arrangements_mdb import ArrangementsMDB
 from mongodriver.users_mdb import UsersMDB
 from validate import Validate
-from urllib2 import Request, urlopen, URLError
+from urllib.request import Request, urlopen
+from urllib.error import URLError
 from bson.json_util import dumps
-import httplib
+import http.client as httplib
 
 SECRET_KEY = 'development key'
 DEBUG = True

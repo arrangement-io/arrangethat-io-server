@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 import csv
-import StringIO
+from io import StringIO
 
 import six
 
